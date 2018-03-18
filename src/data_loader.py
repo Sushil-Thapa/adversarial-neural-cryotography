@@ -1,8 +1,8 @@
 import torch
+from torch.autograd import Variable
 
-
-def train_loader():
+def load_train():
     return None
 
-def test_loader():
+def load_test():
     return None
