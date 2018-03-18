@@ -1,11 +1,12 @@
 import torch
-from torch.optim import optim
+import torch.optim as optim
 from argparse import ArgumentParser
-from src.model import AdversarialNeuralCryptoNet
+from src.model import CryptoNet_Alice, CryptoNet_Bob, CryptoNet_Eve
 from src.config import *
-from src.data_loader import train_loader
-from src.data_loader import test_loader
+from src.data_loader import load_train
+from src.data_loader import load_test
 
+torch.manual_seed(42)
 def get_parser():
     parser = ArgumentParser(description='Pytorch Implementation of Adversarial Neural Cryptography')
 
@@ -61,10 +62,10 @@ def main():
         torch.manual_seed(seed)
         kwargs = {}
 
-    train_loader = train_loader()
-    test_loader = test_loader()
+    train_loader = load_train()
+    test_loader = load_test()
 
-    model = AdversarialNeuralCryptoNet()
+    model = CryptoNet_Alice()
     if use_cuda:
         model.cuda()
 
