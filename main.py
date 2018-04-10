@@ -1,10 +1,9 @@
 import torch
 import torch.optim as optim
 from argparse import ArgumentParser
-from src.model import CryptoNet_Alice, CryptoNet_Bob, CryptoNet_Eve
-from src.config import *
-from src.data_loader import load_train
-from src.data_loader import load_test
+from data.config import *
+from utils.data_loader import get_data
+from utils.manage import Manager
 
 torch.manual_seed(42)
 def get_parser():
@@ -25,7 +24,7 @@ def get_parser():
                         metavar='BATCH_SIZE', default=BATCH_SIZE)
     parser.add_argument('--no-cuda',action='store_true', default=NO_CUDA,dest='no_cuda',
                     help='disables CUDA training')
-    parser.add_argument('--seed', type=int, default=RANDOM_SEED, metavar=RANDOM_SEED,dest='seed',
+    parser.add_argument('--seed', type=int, default=MANUAL_SEED, metavar=MANUAL_SEED,dest='seed',
                     help='random seed (default: 1)')
     parser.add_argument('--log-interval', type=int, default=LOG_INTERVAL, metavar=LOG_INTERVAL,
                         help='how many batches to wait before logging training status')
@@ -33,47 +32,12 @@ def get_parser():
                     help='SGD momentum (default: 0.5)')
     return parser
 
-def train(model):
-    model.train()
-
-def test(model):
-    model.eval()
-
-
 def main():
     parser = get_parser()
     args = parser.parse_args()
-
-    no_cuda = args.no_cuda
-    msg_len=args.msg_len
-    epochs=args.epochs
-    batch_size=args.batch_size
-    learning_rate=args.learning_rate
-    seed = args.seed
-    momentum = args.momentum
-
-
-    use_cuda = not no_cuda and torch.cuda.is_available()
-
-    if use_cuda:
-        torch.cuda.manual_seed(seed)
-        kwargs = {'num_workers': 1, 'pin_memory': True}
-    else:
-        torch.manual_seed(seed)
-        kwargs = {}
-
-    train_loader = load_train()
-    test_loader = load_test()
-
-    model = CryptoNet_Alice()
-    if use_cuda:
-        model.cuda()
-
-    optimizer = optim.SGD(model.parameters(),lr = learning_rate, momentum = momentum)
-
-    for epoch in range(1,epochs+1):
-        train(model,epoch)
-        test(model)
+    inputs = get_data() # Generates and Loads data for training
+    manager = Manager(args,inputs)
+    manager.train()
 
 if __name__ == '__main__':
     main()
