@@ -2,6 +2,8 @@ import numpy as np
 import torch
 import torch.nn as nn
 from torch.autograd import Variable
+from data.config import MSG_LEN, KEY_LEN
+
 
 class ABCryptoNet(nn.Module):
     '''
@@ -11,9 +13,13 @@ class ABCryptoNet(nn.Module):
     '''
     def __init__(self):
         super(ABCryptoNet,self).__init__()
+        self.fc_in =MSG_LEN + KEY_LEN
+        self.fc_out = self.fc_in
+        self.linear = nn.Linear(self.fc_in,self.fc_out)
+        self.sigmoid = nn.Sigmoid()
 
         self.net = nn.Sequential(
-            nn.Linear(1,1),
+            nn.Linear(self.fc_in,self.fc_out),
             nn.Sigmoid(),
             nn.Conv1d(1,2,4,stride=1),
             nn.Sigmoid(),
@@ -25,7 +31,11 @@ class ABCryptoNet(nn.Module):
             nn.Tanh()
         )
     def forward(self,input):
-        output = self.net(input)
+        # input_fc = input.view(-1, self.fc_in) #feed to FC
+        # import pdb; pdb.set_trace()
+        _out = self.linear(self.linear(input.squeeze(1)))
+        output = self.net(_out.unsqueeze(1))
+        print('one pass AB', output.size())
         return output
 
 class ECryptoNet(nn.Module):
@@ -36,10 +46,11 @@ class ECryptoNet(nn.Module):
     '''
     def __init__(self):
         super(ECryptoNet,self).__init__()
-
+        self.fc_in =MSG_LEN
+        self.fc_out = 2 * MSG_LEN
+        self.linear = nn.Linear(self.fc_in,self.fc_out)
+        self.sigmoid = nn.Sigmoid()
         self.net = nn.Sequential(
-            nn.Linear(1,2),
-            nn.Sigmoid(),
             nn.Conv1d(1,2,4,stride=1),
             nn.Sigmoid(),
             nn.Conv1d(2,4,2,stride=2),
@@ -48,9 +59,10 @@ class ECryptoNet(nn.Module):
             nn.Sigmoid(),
             nn.Conv1d(4,1,1,stride=1),
             nn.Tanh()
-        )
+        ) #eve stride [1,1,1,1] in github.com/rfratila/Adversarial-Neural-Cryptography/blob/master/net.py
 
     def forward(self,input):
-        output = self.net(input)
+        _out = self.linear(self.linear(input.squeeze(1)))
+        output = self.net(_out.unsqueeze(1))
+        print('one pass E',output.size())
         return output
-
