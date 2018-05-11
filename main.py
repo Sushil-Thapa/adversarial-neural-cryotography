@@ -12,8 +12,11 @@ def get_parser():
     parser.add_argument('--msg-len', type=int,
                         dest='msg_len', help='message length',
                         metavar='MSG_LEN', default=MSG_LEN)
-    parser.add_argument('-lr','--learning-rate', type=float,
-                        dest='learning_rate',
+    parser.add_argument('--display', type=int,
+                        dest='display', help='display interval',
+                        metavar='display', default=2)
+    parser.add_argument('-lr','--lr', type=float,
+                        dest='lr',
                         help='learning rate (default %(default)s)',
                         metavar='LEARNING_RATE', default=LEARNING_RATE)
     parser.add_argument('--epochs', type=int,
