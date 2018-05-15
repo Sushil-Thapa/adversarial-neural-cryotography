@@ -15,6 +15,6 @@ This work is an independent project to get handson experience on Adversarial Neu
 
 ## TODO List
 - [x] Build Neural Agents based on Fully Connected layers
-- [ ] Design and Implement Cryptography Algorithms with Neural Nets.
+- [ ] Design and Implement Cryptography Algorithms with Adversarial Nets.
 - [ ] Train the Adversarial agents based on Convolutional Architectures.
 - [ ] Reinforcement Learning based Adversarial Examples.
